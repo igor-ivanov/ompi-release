@@ -91,7 +91,6 @@ extern bool ompi_enable_timing;
 int ompi_mpi_finalize(void)
 {
     int ret;
-    static int32_t finalize_has_already_started = 0;
     opal_list_item_t *item;
     struct timeval ompistart, ompistop;
     ompi_rte_collective_t *coll;
@@ -99,18 +98,12 @@ int ompi_mpi_finalize(void)
     ompi_proc_t** procs;
     size_t nprocs;
 
-    /* Extra barrier to flush MPI */
-    comm_world = &ompi_mpi_comm_world.comm;
-    if (ompi_comm_size(comm_world) > 1) {
-        comm_world->c_coll.coll_barrier(comm_world, comm_world->c_coll.coll_barrier_module);
-    }
-
     /* Be a bit social if an erroneous program calls MPI_FINALIZE in
        two different threads, otherwise we may deadlock in
        ompi_comm_free() (or run into other nasty lions, tigers, or
        bears) */
 
-    if (! opal_atomic_cmpset_32(&finalize_has_already_started, 0, 1)) {
+    if (! opal_atomic_cmpset_32(&ompi_mpi_finalize_started, 0, 1)) {
         /* Note that if we're already finalized, we cannot raise an
            MPI exception.  The best that we can do is write something
            to stderr. */
@@ -123,6 +116,13 @@ int ompi_mpi_finalize(void)
                        true, hostname, pid);
         return MPI_ERR_OTHER;
     }
+
+    /* Extra barrier to flush MPI */
+    comm_world = &ompi_mpi_comm_world.comm;
+    if (ompi_comm_size(comm_world) > 1) {
+        comm_world->c_coll.coll_barrier(comm_world, comm_world->c_coll.coll_barrier_module);
+    }
+
 
     ompi_mpiext_fini();
 
