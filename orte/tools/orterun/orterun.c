@@ -1724,6 +1724,25 @@ static int create_app(int argc, char* argv[],
         opal_setenv("OMPI_MCA_pubsub_orte_server", ompi_server, true, &app->env);
     }
 
+    /* set necessary env variables for external usage from amca conf file*/
+    int set_from_file = 0;
+    vars = NULL;
+    if (OPAL_SUCCESS == mca_base_var_process_env_list_from_file(&vars) &&
+            NULL != vars) {
+        for (i=0; NULL != vars[i]; i++) {
+            value = strchr(vars[i], '=');
+            /* terminate the name of the param */
+            *value = '\0';
+            /* step over the equals */
+            value++;
+            /* overwrite any prior entry */
+            opal_setenv(vars[i], value, true, &app->env);
+            /* save it for any comm_spawn'd apps */
+            opal_setenv(vars[i], value, true, &orte_forwarded_envars);
+        }
+        set_from_file = 1;
+        opal_argv_free(vars);
+    }
     /* Did the user request to export any environment variables on the cmd line? */
     env_set_flag = getenv("OMPI_MCA_mca_base_env_list");
     if (opal_cmd_line_is_taken(&cmd_line, "x")) {
@@ -1757,23 +1776,28 @@ static int create_app(int argc, char* argv[],
             }
         }
     } else if (NULL != env_set_flag) {
-        /* set necessary env variables for external usage */
-        vars = NULL;
-        if (OPAL_SUCCESS == mca_base_var_process_env_list(&vars) &&
-                NULL != vars) {
-            for (i=0; NULL != vars[i]; i++) {
-                value = strchr(vars[i], '=');
-                /* terminate the name of the param */
-                *value = '\0';
-                /* step over the equals */
-                value++;
-                /* overwrite any prior entry */
-                opal_setenv(vars[i], value, true, &app->env);
-                /* save it for any comm_spawn'd apps */
-                opal_setenv(vars[i], value, true, &orte_forwarded_envars);
+        if (!set_from_file) {
+            /* set necessary env variables for external usage */
+            vars = NULL;
+            if (OPAL_SUCCESS == mca_base_var_process_env_list(&vars) &&
+                    NULL != vars) {
+                for (i=0; NULL != vars[i]; i++) {
+                    value = strchr(vars[i], '=');
+                    /* terminate the name of the param */
+                    *value = '\0';
+                    /* step over the equals */
+                    value++;
+                    /* overwrite any prior entry */
+                    opal_setenv(vars[i], value, true, &app->env);
+                    /* save it for any comm_spawn'd apps */
+                    opal_setenv(vars[i], value, true, &orte_forwarded_envars);
+                }
+                opal_argv_free(vars);
             }
+        } else {
+            orte_show_help("help-orterun.txt", "orterun:conflict-env-set", false);
+            return ORTE_ERR_FATAL;
         }
-        opal_argv_free(vars);
     }
 
     /* If the user specified --path, store it in the user's app
