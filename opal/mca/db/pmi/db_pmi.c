@@ -586,9 +586,10 @@ static int setup_pmi(void)
         return OPAL_ERROR;
     }
 #endif
-
     /* setup any local envars we were asked to do */
+    mca_base_var_process_env_list_from_file(&environ);
     mca_base_var_process_env_list(&environ);
+
     return OPAL_SUCCESS;
 }
 
