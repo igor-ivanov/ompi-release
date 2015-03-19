@@ -204,6 +204,7 @@ segment_create(map_segment_t *ds_buf,
             opal_show_help("help-oshmem-sshmem-mmap.txt",
                        "mmap:file truncate failure",
                        true, ds_buf->seg_name, (unsigned long long) size, strerror(errno));
+            close(fd);
             return OSHMEM_ERROR;
         }
         addr = mmap((void *)(mca_sshmem_mmap_component.is_start_addr_fixed ? mca_sshmem_base_start_address : NULL),
