@@ -410,7 +410,6 @@ static int oshmem_mkey_recv_cb(void)
             */
             do_recv(status.MPI_SOURCE, msg);
             OBJ_RELEASE(msg);
-            free(tmp_buf);
         }
 
         rc = MPI_Start(&r->recv_req);
