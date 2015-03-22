@@ -63,6 +63,9 @@ static dte_data_representation_t ompi_dtype_2_dte_dtype(ompi_datatype_t *dtype){
     int ompi_type_id = dtype->id;
     int opal_type_id = dtype->super.id;
     dte_data_representation_t dte_data_rep;
+    if (!(dtype->super.flags & OPAL_DATATYPE_FLAG_NO_GAPS)) {
+        ompi_type_id = -1;
+    }
     if (OPAL_UNLIKELY( ompi_type_id < 0 ||
                        ompi_type_id >= OPAL_DATATYPE_MAX_PREDEFINED)){
         dte_data_rep = DTE_ZERO;
