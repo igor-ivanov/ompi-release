@@ -94,7 +94,10 @@ static hcoll_dte_op_t* ompi_op_2_hcoll_op[OMPI_OP_BASE_FORTRAN_OP_MAX + 1] = {
    &hcoll_dte_op_null,          /* OMPI_OP_BASE_FORTRAN_NO_OP */
    &hcoll_dte_op_null           /* OMPI_OP_BASE_FORTRAN_OP_MAX */
 };
-static hcoll_dte_op_t* ompi_op_2_hcolrte_op(ompi_op_t *op){
+static hcoll_dte_op_t* ompi_op_2_hcolrte_op(ompi_op_t *op) {
+    if (op->o_f_to_c_index > OMPI_OP_BASE_FORTRAN_OP_MAX) {
+        return ompi_op_2_hcoll_op[0]; /* return null */
+    }
     return ompi_op_2_hcoll_op[op->o_f_to_c_index];
 }
 
