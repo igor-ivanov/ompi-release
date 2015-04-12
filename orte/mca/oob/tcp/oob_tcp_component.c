@@ -14,7 +14,7 @@
  *                         All rights reserved.
  * Copyright (c) 2009-2014 Cisco Systems, Inc.  All rights reserved.
  * Copyright (c) 2011      Oak Ridge National Labs.  All rights reserved.
- * Copyright (c) 2013-2014 Intel, Inc.  All rights reserved.
+ * Copyright (c) 2013-2015 Intel, Inc.  All rights reserved.
  * Copyright (c) 2014      NVIDIA Corporation.  All rights reserved.
  * Copyright (c) 2014      Research Organization for Information Science
  *                         and Technology (RIST). All rights reserved.
@@ -427,6 +427,14 @@ static int tcp_component_register(void)
                                           OPAL_INFO_LVL_9,
                                           MCA_BASE_VAR_SCOPE_READONLY,
                                           &mca_oob_tcp_component.keepalive_probes);
+    
+    mca_oob_tcp_component.skip_version_check = false;
+    (void)mca_base_component_var_register(component, "skip_version_check",
+                                          "Skip checking versions between connections",
+                                          MCA_BASE_VAR_TYPE_BOOL, NULL, 0, 0,
+                                          OPAL_INFO_LVL_9,
+                                          MCA_BASE_VAR_SCOPE_READONLY,
+                                          &mca_oob_tcp_component.skip_version_check);
     return ORTE_SUCCESS;
 }
 
@@ -599,7 +607,6 @@ static bool component_available(void)
     /* set the module event base - this is where we would spin off a separate
      * progress thread if so desired */
     mca_oob_tcp_module.ev_base = orte_event_base;
-
     return true;
 }
 
