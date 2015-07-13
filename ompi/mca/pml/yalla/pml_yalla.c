@@ -429,6 +429,11 @@ static int mca_pml_yalla_bsend(mxm_send_req_t *mxm_sreq)
 
     bsreq->mxm.opcode         = mxm_sreq->opcode;
     bsreq->mxm.flags          = mxm_sreq->flags;
+#if MXM_API >= MXM_VERSION(3,4)
+    if (ompi_pml_yalla.force_bcopy_send) {
+        bsreq->mxm.flags     |= MXM_REQ_SEND_FLAG_BCOPY;
+    }
+#endif
     bsreq->mxm.op.send        = mxm_sreq->op.send;
 
     error = mxm_req_send(&bsreq->mxm);
