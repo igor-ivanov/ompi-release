@@ -94,7 +94,7 @@ static inline int set_mxm_tls()
     char *tls;
 
     /*
-     * Set DC defaults optmized for shmem
+     * Set DC defaults optimized for shmem
      */
     opal_setenv("MXM_OSHMEM_DC_QP_LIMIT",      "2", 0, &environ);
     opal_setenv("MXM_OSHMEM_DC_RNDV_QP_LIMIT", "2", 0, &environ);
