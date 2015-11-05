@@ -309,11 +309,6 @@ static int _shmem_init(int argc, char **argv, int requested, int *provided)
         goto error;
     }
 
-    /* We need to do this anyway.
-     * This place requires to be reviewed and more elegant way is expected
-     */
-    ompi_proc_local_proc = (ompi_proc_t*) oshmem_proc_local_proc;
-
     /* Register the OSHMEM layer's MCA parameters */
     if (OSHMEM_SUCCESS != (ret = oshmem_shmem_register_params())) {
         error = "oshmem_info_register: oshmem_register_params failed";
@@ -368,11 +363,8 @@ static int _shmem_init(int argc, char **argv, int requested, int *provided)
         goto error;
     }
 
-    /* identify the architectures of remote procs and setup
-     * their datatype convertors, if required
-     */
-    if (OSHMEM_SUCCESS != (ret = oshmem_proc_set_arch())) {
-        error = "oshmem_proc_set_arch failed";
+    if (OSHMEM_SUCCESS != (ret = oshmem_proc_group_init())) {
+        error = "oshmem_proc_group_init() failed";
         goto error;
     }
 

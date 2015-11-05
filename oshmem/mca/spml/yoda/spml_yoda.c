@@ -478,7 +478,7 @@ sshmem_mkey_t *mca_spml_yoda_register(void* addr,
 
         SPML_VERBOSE(5,
                      "rank %d btl %s va_base: 0x%p len: %d key %llx size %llu",
-                     oshmem_proc_local_proc->proc_name.vpid, btl_type2str(ybtl->btl_type),
+		     oshmem_proc_pe(oshmem_proc_local()), btl_type2str(ybtl->btl_type),
                      mkeys[i].va_base, mkeys[i].len, (unsigned long long)mkeys[i].u.key, (unsigned long long)size);
     }
     OBJ_DESTRUCT(&convertor);
