@@ -39,7 +39,7 @@ OSHMEM_DECLSPEC extern mca_base_framework_t oshmem_atomic_base_framework;
 #define __ATOMIC_FILE__ __FILE__
 #endif
 
-#ifdef OPAL_ENABLE_DEBUG
+#if OPAL_ENABLE_DEBUG
 #define ATOMIC_VERBOSE(level, ...) \
     oshmem_output_verbose(level, oshmem_atomic_base_framework.framework_output, \
         "%s:%d - %s()", __ATOMIC_FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
