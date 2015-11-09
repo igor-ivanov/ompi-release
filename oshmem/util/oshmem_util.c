@@ -44,6 +44,7 @@ void oshmem_output_verbose(int level, int output_id, const char* prefix,
     }
 }
 
+
 void oshmem_output(int output_id, const char* prefix, const char* file,
     int line, const char* function, const char* format, ...)
 {
@@ -60,6 +61,15 @@ void oshmem_output(int output_id, const char* prefix, const char* file,
 
     ret = asprintf(&buff, "%s %s", prefix, str);
     assert(-1 != ret);
+
+    /*
+     * This function is called for error message only
+     * We would like to output it in any case (debug/release mode,
+     * set/unset verbose level)
+     */
+    if (-1 == output_id) {
+        output_id = opal_output_open (NULL);
+    }
 
     opal_output(output_id, buff, file, line, function);
 
