@@ -638,7 +638,7 @@ sshmem_mkey_t *mca_spml_ikrit_register(void* addr,
 #if MXM_API < MXM_VERSION(2,0)
             mkeys[i].len = 0;
 #else
-            if (mca_spml_ikrit.ud_only && !mca_spml_ikrit.hw_rdma_channel) {
+            if (mca_spml_ikrit.ud_only) {
                 mkeys[i].len = 0;
                 break;
             }
